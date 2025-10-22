@@ -18,6 +18,7 @@
 	});
 
 	$inspect(session);
+	$inspect(user);
 </script>
 
 <svelte:head>
