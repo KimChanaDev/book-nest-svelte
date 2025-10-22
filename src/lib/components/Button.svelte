@@ -8,8 +8,9 @@
 		isDanger?: boolean;
 	}
 	interface ButtonProps extends BasicProps {
-		onclick: (e: MouseEvent) => void;
+		onclick?: (e: MouseEvent) => void;
 		href?: never;
+		type?: 'submit' | 'button';
 		[prop: string]: any;
 	}
 	interface LinkProps extends BasicProps {
