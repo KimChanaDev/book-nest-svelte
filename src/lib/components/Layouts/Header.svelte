@@ -5,7 +5,7 @@
 	import { getUserState } from '$state';
 
 	let userContext = getUserState();
-	const { user } = $derived(userContext);
+	const { user, username } = $derived(userContext);
 
 	async function logout() {
 		await userContext.logout();
@@ -21,7 +21,7 @@
 		{#if user}
 			<ul>
 				<li>
-					{user.email}
+					{username}
 				</li>
 				<li>
 					<Button isMenu={true} onclick={logout}>Logout</Button>
