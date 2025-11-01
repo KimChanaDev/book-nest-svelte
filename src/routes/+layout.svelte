@@ -24,9 +24,6 @@
 		});
 		return () => data.subscription.unsubscribe();
 	});
-
-	$inspect(session);
-	$inspect(user);
 </script>
 
 <svelte:head>
