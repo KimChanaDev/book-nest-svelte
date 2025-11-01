@@ -54,6 +54,12 @@ export const actions: Actions = {
 			returnObject.success = false;
 			return fail(400, returnObject);
 		}
+
+		await supabase.from('user_names').insert({
+			user_id: data.user.id,
+			name
+		});
+
 		redirect(303, '/private/dashboard');
 	}
 };
