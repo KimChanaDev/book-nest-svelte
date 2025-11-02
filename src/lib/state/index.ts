@@ -1,1 +1,1 @@
-export { UserState, setUserState, getUserState } from './user-state.svelte';
+export { UserState, setUserState, getUserState, type Book } from './user-state.svelte';
