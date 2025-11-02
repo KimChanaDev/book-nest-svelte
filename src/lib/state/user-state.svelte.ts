@@ -1,6 +1,7 @@
 import type { Database } from '$lib/types/database.types';
 import type { Session, SupabaseClient, User } from '@supabase/supabase-js';
 import { getContext, setContext } from 'svelte';
+import { SvelteDate } from 'svelte/reactivity';
 
 interface UserStateProps {
 	session: Session | null;
@@ -68,6 +69,47 @@ export class UserState {
 		}
 		this.allBooks = booksResponse.data;
 		this.username = usernameResponse.data.name;
+	}
+
+	getHighestRatedBooks() {
+		return this.allBooks.toSorted((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 10);
+	}
+
+	getHighestRatedBooksByGenre(genre: string) {
+		return this.allBooks
+			.filter((book) => book.genre?.includes(genre))
+			.toSorted((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+			.slice(0, 10);
+	}
+
+	getUnreadBooks() {
+		return this.allBooks
+			.filter((book) => !book.finished_reading)
+			.toSorted((a, b) => {
+				return new SvelteDate(b.created_at).getTime() - new SvelteDate(a.created_at).getTime();
+			})
+			.slice(0, 10);
+	}
+
+	getFavoriteGenre() {
+		if (this.allBooks.length === 0) {
+			return '';
+		}
+
+		const genreCount: Record<string, number> = {};
+		this.allBooks.forEach((book) => {
+			const genres = book.genre ? book.genre.split(',').map((g) => g.trim()) : [];
+			genres.forEach((genre) => {
+				if (genre) {
+					genreCount[genre] = (genreCount[genre] || 0) + 1;
+				}
+			});
+		});
+		const favoriteGenre = Object.keys(genreCount).reduce(
+			(a, b) => (genreCount[a] > genreCount[b] ? a : b),
+			''
+		);
+		return favoriteGenre;
 	}
 
 	async logout() {

@@ -3,8 +3,8 @@
 	import Icon from '@iconify/svelte';
 	import { BookCategory } from '$components';
 
-	let userState = getUserState();
-	let { allBooks, username } = $derived(userState);
+	let userContext = getUserState();
+	let { username } = $derived(userContext);
 </script>
 
 <div class="dashboard">
@@ -22,7 +22,18 @@
 		</div>
 	</div>
 
-	<BookCategory bookToDisplay={allBooks} categoryName="Your favorite books" />
+	<BookCategory
+		bookToDisplay={userContext.getHighestRatedBooks()}
+		categoryName="Your favorite books"
+	/>
+	<BookCategory
+		bookToDisplay={userContext.getUnreadBooks()}
+		categoryName="Recently added. unread books"
+	/>
+	<BookCategory
+		bookToDisplay={userContext.getHighestRatedBooksByGenre(userContext.getFavoriteGenre())}
+		categoryName="Highest rated books from favorite genre: {userContext.getFavoriteGenre()}"
+	/>
 </div>
 
 <style>
