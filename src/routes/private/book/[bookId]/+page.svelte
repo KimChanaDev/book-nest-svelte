@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, StarRating } from '$components';
-	import type { Book } from '$state';
+	import { getUserState, type Book } from '$state';
 	import Icon from '@iconify/svelte';
 
 	interface ComponentProps {
@@ -9,7 +9,8 @@
 		};
 	}
 	let { data }: ComponentProps = $props();
-	let book = $derived(data.book);
+	let userContext = getUserState();
+	let book = $derived(userContext.getBookById(data.book.id) || data.book);
 	let isEditMode = $state(false);
 	let title = $derived(book.title);
 	let author = $derived(book.author || '');
@@ -20,8 +21,30 @@
 		history.back();
 	}
 
-	function toggleEditMode() {
+	async function toggleEditModeSaveToDatabase() {
+		if (isEditMode) {
+			await userContext.updateBook(book.id, {
+				title,
+				author,
+				description,
+				genre
+			});
+		}
 		isEditMode = !isEditMode;
+	}
+
+	async function updateReadingStatus() {
+		const hasStartedReading = Boolean(book.started_reading);
+		const currentTimestamp = new Date().toISOString();
+		let updateObject: Partial<Book> = hasStartedReading
+			? { finished_reading: currentTimestamp }
+			: { started_reading: currentTimestamp };
+
+		await userContext.updateBook(book.id, updateObject);
+	}
+
+	function updateDatabaseRating(newRating: number) {
+		userContext.updateBook(book.id, { rating: newRating });
 	}
 </script>
 
@@ -29,7 +52,7 @@
 	<h2 class="book-title mb-m mt-m">{book.title}</h2>
 	<p class="book-author">by {book.author}</p>
 	<h4 class="mt-m mb-xs semi-bold">Your rating</h4>
-	<StarRating value={book.rating || 0} isReadOnly={false} />
+	<StarRating value={book.rating || 0} {updateDatabaseRating} isReadOnly={false} />
 	<p class="small-font">
 		Click to {book.rating ? 'change' : 'give'} rating
 	</p>
@@ -47,12 +70,7 @@
 		</button>
 	{/if}
 	{#if !book.finished_reading}
-		<Button
-			isSecondary={true}
-			onclick={() => {
-				console.log('Update reading status');
-			}}
-		>
+		<Button isSecondary={Boolean(book.started_reading)} onclick={updateReadingStatus}>
 			{book.started_reading ? 'Mark as Finished' : 'Start Reading'}
 		</Button>
 	{/if}
@@ -70,7 +88,7 @@
 			<input class="input" bind:value={author} type="text" name="author" />
 		</div>
 		<h4 class="mt-m mb-xs semi-bold">Your rating</h4>
-		<StarRating value={book.rating || 0} isReadOnly={false} />
+		<StarRating value={book.rating || 0} {updateDatabaseRating} isReadOnly={false} />
 		<p class="small-font">
 			Click to {book.rating ? 'change' : 'give'} rating
 		</p>
@@ -82,12 +100,7 @@
 			placeholder="Give a description."
 		></textarea>
 		{#if !book.finished_reading}
-			<Button
-				isSecondary={true}
-				onclick={() => {
-					console.log('Update reading status');
-				}}
-			>
+			<Button isSecondary={Boolean(book.started_reading)} onclick={updateReadingStatus}>
 				{book.started_reading ? 'Mark as Finished' : 'Start Reading'}
 			</Button>
 		{/if}
@@ -108,7 +121,7 @@
 			{:else}
 				{@render bookInfo()}
 			{/if}
-			<Button isSecondary={true} onclick={toggleEditMode}
+			<Button isSecondary={true} onclick={toggleEditModeSaveToDatabase}
 				>{isEditMode ? 'Save changes' : 'Edit'}</Button
 			>
 			<Button isDanger={true} onclick={() => console.log('Delete the book')}
