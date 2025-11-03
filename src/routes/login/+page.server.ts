@@ -57,6 +57,8 @@ export const actions: Actions = {
 		if (error) {
 			return fail(400, { message: 'Something went wrong with Google login' });
 		}
+		console.log('redirect supabase:' + data.url);
+
 		throw redirect(303, data.url);
 	}
 };
