@@ -81,7 +81,10 @@ export class UserState {
 	}
 
 	getHighestRatedBooks() {
-		return this.allBooks.toSorted((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 10);
+		return this.allBooks
+			.filter((b) => b.rating)
+			.toSorted((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+			.slice(0, 10);
 	}
 
 	getHighestRatedBooksByGenre(genre: string) {
@@ -93,7 +96,7 @@ export class UserState {
 
 	getUnreadBooks() {
 		return this.allBooks
-			.filter((book) => !book.finished_reading)
+			.filter((book) => !book.started_reading)
 			.toSorted((a, b) => {
 				return new SvelteDate(b.created_at).getTime() - new SvelteDate(a.created_at).getTime();
 			})
@@ -101,7 +104,7 @@ export class UserState {
 	}
 
 	getFavoriteGenre() {
-		if (this.allBooks.length === 0) {
+		if (this.allBooks.filter((book) => book.genre).length === 0) {
 			return '';
 		}
 
@@ -179,10 +182,59 @@ export class UserState {
 		goto(resolve('/private/dashboard'));
 	}
 
+	async updateAccountData(email: string, username: string) {
+		if (!this.session) {
+			return;
+		}
+
+		try {
+			const response = await fetch('/api/update-account', {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${this.session.access_token}`
+				},
+				body: JSON.stringify({ email, username })
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to update account data, status: ' + response.status);
+			}
+
+			this.username = username;
+		} catch (error) {
+			console.error('Error updating account data:', error);
+			throw error;
+		}
+	}
+
 	async logout() {
 		await this.supabase?.auth.signOut();
 	}
+	async deleteAccount() {
+		if (!this.session) {
+			return;
+		}
+		try {
+			const response = await fetch('/api/delete-account', {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${this.session.access_token}`
+				}
+			});
 
+			if (!response.ok) {
+				throw new Error('Failed to update account data, status: ' + response.status);
+			}
+
+			await this.logout();
+			goto(resolve('/'));
+		} catch (error) {
+			console.error('Error updating account data:', error);
+			throw error;
+		}
+	}
 	async addBooksToLibrary(booksToAdd: OpenAiBook[]) {
 		if (!this.supabase || !this.user) {
 			return;
