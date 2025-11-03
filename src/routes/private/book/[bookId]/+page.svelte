@@ -70,13 +70,7 @@
 		<p class="mb-m">{book.description}</p>
 	{:else}
 		<h4 class="mt-m mb-xs semi-bold">No description</h4>
-		<button
-			class="block mb-m"
-			onclick={() => {
-				console.log('Toggle on the description editor');
-			}}
-			>Click to add one.
-		</button>
+		<button class="block mb-m" onclick={toggleEditModeSaveToDatabase}>Click to add one. </button>
 	{/if}
 	{#if !book.finished_reading}
 		<Button isSecondary={Boolean(book.started_reading)} onclick={updateReadingStatus}>
@@ -133,9 +127,9 @@
 			<Button isSecondary={true} onclick={toggleEditModeSaveToDatabase}
 				>{isEditMode ? 'Save changes' : 'Edit'}</Button
 			>
-			<Button isDanger={true} onclick={() => console.log('Delete the book')}
-				>Delete the book from library</Button
-			>
+			<Button isDanger={true} onclick={() => userContext.deleteBook(book.id)}>
+				Delete the book from library
+			</Button>
 		</div>
 		<div class="book-cover">
 			{#if book.cover_image}

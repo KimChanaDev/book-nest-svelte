@@ -1,7 +1,9 @@
+import { goto } from '$app/navigation';
 import type { Database } from '$lib/types/database.types';
 import type { Session, SupabaseClient, User } from '@supabase/supabase-js';
 import { getContext, setContext } from 'svelte';
 import { SvelteDate } from 'svelte/reactivity';
+import { resolve } from '$app/paths';
 
 interface UserStateProps {
 	session: Session | null;
@@ -158,6 +160,18 @@ export class UserState {
 		} = this.supabase.storage.from('book-cover').getPublicUrl(filePath);
 
 		await this.updateBook(bookId, { cover_image: publicUrl });
+	}
+
+	async deleteBook(bookId: number) {
+		if (!this.supabase) {
+			return;
+		}
+		const { error, status } = await this.supabase.from('books').delete().eq('id', bookId);
+		if (status === 204 && !error) {
+			this.allBooks = this.allBooks.filter((book) => book.id !== bookId);
+		}
+
+		goto(resolve('/private/dashboard'));
 	}
 
 	async logout() {
