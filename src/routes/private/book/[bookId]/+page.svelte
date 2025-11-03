@@ -2,6 +2,7 @@
 	import { Button, StarRating } from '$components';
 	import { getUserState, type Book } from '$state';
 	import Icon from '@iconify/svelte';
+	import DropZone from 'svelte-file-dropzone';
 
 	interface ComponentProps {
 		data: {
@@ -45,6 +46,14 @@
 
 	function updateDatabaseRating(newRating: number) {
 		userContext.updateBook(book.id, { rating: newRating });
+	}
+
+	async function handleUploadCoverImage(event: CustomEvent<any>) {
+		const { acceptedFiles, fileRejections } = event.detail;
+		if (acceptedFiles.length) {
+			const file = acceptedFiles[0] as File;
+			await userContext.uploadBookCoverImage(book.id, file);
+		}
 	}
 </script>
 
@@ -132,10 +141,16 @@
 			{#if book.cover_image}
 				<img src={book.cover_image} alt="Cover image of {book.title}" />
 			{:else}
-				<button class="add-cover">
+				<DropZone
+					on:drop={handleUploadCoverImage}
+					multiple={false}
+					accept="image/*"
+					maxSize={5 * 1024 * 1024}
+					containerClasses={'dropzone-cover'}
+				>
 					<Icon icon="bi:camera-fill" width="40" />
 					<p>Add book cover</p>
-				</button>
+				</DropZone>
 			{/if}
 		</div>
 	</div>
@@ -170,13 +185,6 @@
 		border-radius: inherit;
 	}
 
-	.add-cover {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-	}
-
 	.input {
 		padding: 8px 4px;
 		width: 100%;
@@ -200,5 +208,18 @@
 	.input-author p {
 		margin-right: 8px;
 		font-size: 18px;
+	}
+
+	:global(.dropzone-cover) {
+		width: 100%;
+		height: 100%;
+		border-radius: 15px !important;
+		display: flex !important;
+		flex-direction: column !important;
+		justify-content: center;
+		align-items: center !important;
+		cursor: pointer;
+		border: unset;
+		border-style: solid !important;
 	}
 </style>
