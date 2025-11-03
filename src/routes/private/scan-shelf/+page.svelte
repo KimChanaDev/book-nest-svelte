@@ -1,14 +1,16 @@
 <script lang="ts">
+	import { Button } from '$components';
 	import { convertFileToBase64 } from '$lib/utils/openai-helper';
+	import { getUserState, type OpenAiBook } from '$state';
 	import Icon from '@iconify/svelte';
 	import Dropzone from 'svelte-file-dropzone';
 
 	let isLoading = $state(false);
+	let errorMessage = $state('');
+	let recognizedBooks = $state<OpenAiBook[]>([]);
+	let bookSuccessfullyAdded = $state(false);
+	let userContext = getUserState();
 
-	interface OpenAiBook {
-		title: string;
-		author: string;
-	}
 	async function handleDrop(event: CustomEvent<any>) {
 		const { acceptedFiles, fileRejections } = event.detail;
 		if (acceptedFiles.length) {
@@ -30,28 +32,172 @@
 				}
 
 				const result = (await response.json()) as { bookArray: OpenAiBook[] };
+				recognizedBooks = result.bookArray;
+
 				console.log(result);
 			} catch (error) {
-				console.error('Error uploading file:', error);
-			} finally {
-				isLoading = false;
+				errorMessage = 'There was an error processing your image. Please try again.';
 			}
+		} else {
+			errorMessage = 'File upload failed. Make sure image size less than 10MB. Please try again.';
+		}
+		isLoading = false;
+	}
+
+	function removeBook(index: number) {
+		recognizedBooks.splice(index, 1);
+	}
+
+	async function addAllBooks() {
+		isLoading = true;
+		try {
+			await userContext.addBooksToLibrary(recognizedBooks);
+			isLoading = false;
+			bookSuccessfullyAdded = true;
+		} catch (error: any) {
+			errorMessage = error.message;
 		}
 	}
 </script>
 
 <h2 class="mt-m mb-l">Take a picture to add a book to your shelf</h2>
-<div class="upload-area">
-	<div class="upload-container">
-		<Dropzone
-			on:drop={handleDrop}
-			multiple={false}
-			accept="image/*"
-			maxSize={10 * 1024 * 1024}
-			containerClasses={'dropzone-cover'}
-		>
-			<Icon icon="bi:camera-fill" width="40px" />
-			<p>Drag a picture here or click to select a file</p>
-		</Dropzone>
+{#if recognizedBooks.length === 0}
+	<div class="upload-area">
+		<div class="upload-container">
+			{#if errorMessage}
+				<h4 class="upload-error text-center mb-s">{errorMessage}</h4>
+			{/if}
+			{#if isLoading}
+				<div class="spinner-container">
+					<div class="spinner"></div>
+					<p>Processing your book</p>
+				</div>
+			{:else}
+				<Dropzone
+					on:drop={handleDrop}
+					multiple={false}
+					accept="image/*"
+					maxSize={10 * 1024 * 1024}
+					containerClasses={'dropzone-cover dropzone-books'}
+				>
+					<Icon icon="bi:camera-fill" width="40px" />
+					<p>Drag a picture here or click to select a file</p>
+				</Dropzone>
+			{/if}
+		</div>
 	</div>
-</div>
+{:else if !bookSuccessfullyAdded}
+	<div class="found-books mb-l">
+		<h3>Found Books:</h3>
+		<table class="book-list mb-m">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Author</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each recognizedBooks as book, index}
+					<tr>
+						<td>{book.title}</td>
+						<td>{book.author}</td>
+						<td>
+							<button
+								type="button"
+								aria-label="Remove book button"
+								class="remove-button"
+								onclick={() => removeBook(index)}
+							>
+								<Icon icon="mdi:delete" width="30px" />
+							</button>
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+
+		<Button onclick={addAllBooks}>Add all books</Button>
+	</div>
+{:else}
+	<h4>The selected {recognizedBooks.length} books have been added to your library.</h4>
+	<Button href="/private/dashboard">Go to your library</Button>
+{/if}
+
+<style>
+	.book-list {
+		width: 800px;
+		background-color: white;
+		border-radius: 8px;
+		border-collapse: collapse;
+	}
+
+	.book-list th {
+		font-size: 22px;
+		text-align: left;
+		padding: 8px 16px;
+		border-bottom: 3px solid black;
+	}
+
+	.book-list td {
+		font-size: 22px;
+		text-align: left;
+		padding: 12px 16px;
+		border-bottom: 1px solid #b0bec5;
+	}
+
+	.book-list tr:last-child td {
+		border-bottom: none;
+	}
+
+	:global(.remove-button svg) {
+		color: #e53935;
+	}
+
+	.upload-error {
+		color: #e53935;
+	}
+
+	.upload-area {
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+	}
+
+	.upload-container {
+		width: 600px;
+	}
+
+	.spinner-container {
+		display: flex;
+	}
+	.spinner {
+		border: 4px solid rgba(0, 0, 0, 0.1);
+		border-left-color: black;
+		border-radius: 50%;
+		width: 32px;
+		height: 32px;
+		display: inline-block;
+		margin-right: 8px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	:global(.dropzone-books) {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-width: 600px !important;
+		min-height: 400px !important;
+		flex: 0 !important;
+		cursor: pointer;
+	}
+</style>

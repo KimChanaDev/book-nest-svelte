@@ -1,1 +1,7 @@
-export { UserState, setUserState, getUserState, type Book } from './user-state.svelte';
+export {
+	UserState,
+	setUserState,
+	getUserState,
+	type Book,
+	type OpenAiBook
+} from './user-state.svelte';
