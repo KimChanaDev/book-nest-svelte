@@ -33,8 +33,6 @@
 
 				const result = (await response.json()) as { bookArray: OpenAiBook[] };
 				recognizedBooks = result.bookArray;
-
-				console.log(result);
 			} catch (error) {
 				errorMessage = 'There was an error processing your image. Please try again.';
 			}
