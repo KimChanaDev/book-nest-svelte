@@ -113,7 +113,7 @@
 {/snippet}
 
 <div class="book-page">
-	<button onclick={goBack} aria-label="Go back">
+	<button onclick={goBack} aria-label="Go back" class="back-button">
 		<Icon icon="ep:back" width="40" />
 	</button>
 
@@ -151,13 +151,19 @@
 </div>
 
 <style>
+	.back-button {
+		margin-bottom: 16px;
+	}
+
 	.book-container {
 		display: flex;
 		justify-content: flex-start;
+		gap: 40px;
 	}
 
 	.book-info {
-		width: 50%;
+		flex: 1;
+		max-width: 600px;
 	}
 
 	.book-cover {
@@ -169,7 +175,6 @@
 		border-radius: 15px;
 		min-height: 400px;
 		max-width: 450px;
-		margin-left: 80px;
 	}
 
 	.book-cover img {
@@ -189,7 +194,7 @@
 	}
 
 	.input-title {
-		font-size: 60px;
+		font-size: clamp(32px, 6vw, 60px);
 		font-weight: bold;
 		font-family: 'EB Garamond', serif;
 	}
@@ -197,10 +202,11 @@
 	.input-author {
 		display: flex;
 		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px;
 	}
 
 	.input-author p {
-		margin-right: 8px;
 		font-size: 18px;
 	}
 
@@ -215,5 +221,56 @@
 		cursor: pointer;
 		border: unset;
 		border-style: solid !important;
+	}
+
+	/* Tablet */
+	@media (max-width: 1024px) {
+		.book-container {
+			gap: 32px;
+		}
+
+		.book-info {
+			max-width: 500px;
+		}
+
+		.book-cover {
+			width: 45%;
+			min-height: 350px;
+			max-width: 400px;
+		}
+
+		.input-title {
+			font-size: clamp(28px, 5vw, 50px);
+		}
+	}
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.book-container {
+			flex-direction: column-reverse;
+			gap: 24px;
+		}
+
+		.book-info {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.book-cover {
+			width: 100%;
+			max-width: 100%;
+			min-height: 300px;
+		}
+
+		.back-button :global(svg) {
+			width: 32px !important;
+			height: 32px !important;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.book-cover {
+			min-height: 250px;
+		}
 	}
 </style>

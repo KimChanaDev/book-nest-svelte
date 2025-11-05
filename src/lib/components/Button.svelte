@@ -65,8 +65,15 @@
 		color: white;
 		border: 1px solid white;
 		font-weight: normal;
-		font-size: 22px;
+		font-size: clamp(18px, 3vw, 22px);
+		transition: all 0.3s ease;
 	}
+
+	.btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+
 	.btn-secondary {
 		background-color: white;
 		color: black;
@@ -78,5 +85,31 @@
 	.btn-menu {
 		padding: 8px 20px;
 		min-width: 150px;
+	}
+
+	/* Tablet */
+	@media (max-width: 768px) {
+		.btn {
+			padding: 10px 20px;
+			min-width: 180px;
+		}
+
+		.btn-menu {
+			padding: 6px 16px;
+			min-width: 120px;
+		}
+	}
+
+	/* Mobile */
+	@media (max-width: 480px) {
+		.btn {
+			padding: 8px 16px;
+			min-width: 140px;
+		}
+
+		.btn-menu {
+			padding: 6px 12px;
+			min-width: 100px;
+		}
 	}
 </style>

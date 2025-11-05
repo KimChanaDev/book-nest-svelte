@@ -1,6 +1,6 @@
 # 📚 Book Nest
 
-Book Nest is a modern personal library management application that allows you to create, organize, and share your book collection. Built with SvelteKit and powered by Supabase, it features an AI-powered book scanning capability using OpenAI's GPT-4 Vision to automatically recognize books from shelf photos.
+This is small practice project, a personal library management application that allows you to create, organize, and share your book collection. Built with SvelteKit and powered by Supabase, it features an AI-powered book scanning capability using OpenAI's GPT-4 Vision to automatically recognize books from shelf photos.
 
 ## ✨ Features
 

@@ -45,6 +45,7 @@
 	.rating-container {
 		display: inline-flex;
 		outline: none;
+		gap: 2px;
 	}
 
 	.star {
@@ -53,12 +54,28 @@
 		outline: none;
 		cursor: pointer;
 		padding: 0;
-		font-size: 32px;
+		font-size: clamp(24px, 4vw, 32px);
 		color: transparent;
+		transition: transform 0.2s ease;
+	}
+
+	.star:not(:disabled):hover {
+		transform: scale(1.1);
+	}
+
+	.star:disabled {
+		cursor: default;
 	}
 
 	.star span {
 		display: inline-block;
 		color: var(--fill);
+	}
+
+	/* Mobile */
+	@media (max-width: 480px) {
+		.star {
+			font-size: clamp(20px, 5vw, 28px);
+		}
 	}
 </style>

@@ -87,33 +87,35 @@
 {:else if !bookSuccessfullyAdded}
 	<div class="found-books mb-l">
 		<h3>Found Books:</h3>
-		<table class="book-list mb-m">
-			<thead>
-				<tr>
-					<th>Title</th>
-					<th>Author</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each recognizedBooks as book, index}
+		<div class="table-wrapper">
+			<table class="book-list mb-m">
+				<thead>
 					<tr>
-						<td>{book.title}</td>
-						<td>{book.author}</td>
-						<td>
-							<button
-								type="button"
-								aria-label="Remove book button"
-								class="remove-button"
-								onclick={() => removeBook(index)}
-							>
-								<Icon icon="mdi:delete" width="30px" />
-							</button>
-						</td>
+						<th>Title</th>
+						<th>Author</th>
+						<th></th>
 					</tr>
-				{/each}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{#each recognizedBooks as book, index}
+						<tr>
+							<td>{book.title}</td>
+							<td>{book.author}</td>
+							<td>
+								<button
+									type="button"
+									aria-label="Remove book button"
+									class="remove-button"
+									onclick={() => removeBook(index)}
+								>
+									<Icon icon="mdi:delete" width="30px" />
+								</button>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 
 		<Button onclick={addAllBooks}>Add all books</Button>
 	</div>
@@ -123,6 +125,11 @@
 {/if}
 
 <style>
+	.table-wrapper {
+		overflow-x: auto;
+		width: 100%;
+	}
+
 	.book-list {
 		width: 800px;
 		background-color: white;
@@ -166,10 +173,13 @@
 
 	.upload-container {
 		width: 600px;
+		max-width: 100%;
 	}
 
 	.spinner-container {
 		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.spinner {
 		border: 4px solid rgba(0, 0, 0, 0.1);
@@ -197,5 +207,67 @@
 		min-height: 400px !important;
 		flex: 0 !important;
 		cursor: pointer;
+	}
+
+	/* Tablet */
+	@media (max-width: 1024px) {
+		.book-list {
+			width: 700px;
+		}
+
+		.book-list th,
+		.book-list td {
+			font-size: 20px;
+			padding: 10px 14px;
+		}
+
+		:global(.dropzone-books) {
+			min-width: 500px !important;
+			min-height: 350px !important;
+		}
+	}
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.book-list {
+			width: 100%;
+			min-width: 500px;
+		}
+
+		.book-list th,
+		.book-list td {
+			font-size: 16px;
+			padding: 8px 10px;
+		}
+
+		:global(.remove-button svg) {
+			width: 24px !important;
+			height: 24px !important;
+		}
+
+		:global(.dropzone-books) {
+			min-width: 100% !important;
+			min-height: 300px !important;
+		}
+
+		.upload-container {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.book-list {
+			min-width: 400px;
+		}
+
+		.book-list th,
+		.book-list td {
+			font-size: 14px;
+			padding: 6px 8px;
+		}
+
+		:global(.dropzone-books) {
+			min-height: 250px !important;
+		}
 	}
 </style>

@@ -1,38 +1,45 @@
-import { redirect, type RequestHandler } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	const code = url.searchParams.get('code');
-	if (code) {
-		await supabase.auth.exchangeCodeForSession(code);
+	const next = url.searchParams.get('next') ?? '/private/dashboard';
+	if (!code) {
+		throw fail(401, 'No code provided on callback url');
+	}
+	const { error } = await supabase.auth.exchangeCodeForSession(code);
+	if (error) {
+		console.error('Error exchanging code for session:', error);
+		throw fail(401, 'Session exchange failed');
 	}
 
-	const sessionData = await supabase.auth.getSession();
-	if (sessionData.data.session) {
-		const userId = sessionData.data.session.user.id;
-		const userName = sessionData.data.session.user.user_metadata.name;
+	const {
+		data: { user }
+	} = await supabase.auth.getUser();
 
+	if (user) {
 		const { data: existingUser, error: selectError } = await supabase
 			.from('user_names')
 			.select('name')
-			.eq('user_id', userId)
+			.eq('user_id', user.id)
 			.single();
 
 		if (selectError && selectError.code !== 'PGRST116') {
-			return new Response('Failed to check for existing user', { status: 500 });
+			console.error('Error checking user:', selectError);
 		}
 
 		if (!existingUser) {
+			const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'No Name';
 			const { error: insertError } = await supabase.from('user_names').insert({
-				user_id: userId,
-				name: userName || 'No Name'
+				user_id: user.id,
+				name: userName
 			});
 
 			if (insertError) {
-				return new Response('Failed to create user_names record', { status: 500 });
+				console.error('Error inserting user name:', insertError);
 			}
 		}
-		throw redirect(303, '/private/dashboard');
 	}
 
-	throw new Response('Session data not found', { status: 400 });
+	throw redirect(303, next);
 };

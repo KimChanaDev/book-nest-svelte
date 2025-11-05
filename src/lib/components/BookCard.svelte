@@ -49,6 +49,7 @@
 		color: white;
 		text-decoration: none;
 		text-align: left;
+		flex-shrink: 0;
 	}
 
 	.book-cover {
@@ -90,5 +91,50 @@
 		padding: 4px 8px;
 		width: auto;
 		background-color: rgba(4, 59, 92, 0.7);
+		font-size: 14px;
+	}
+
+	/* Tablet */
+	@media (max-width: 1024px) {
+		.book-card {
+			min-width: 300px;
+			width: 300px;
+			height: 260px;
+		}
+
+		.book-info {
+			padding: 50px 12px 0px 12px;
+		}
+	}
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.book-card {
+			min-width: 260px;
+			width: 260px;
+			height: 240px;
+		}
+
+		.book-info {
+			padding: 40px 12px 0px 12px;
+		}
+
+		.book-status {
+			top: 12px;
+			font-size: 12px;
+			padding: 3px 6px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.book-card {
+			min-width: 220px;
+			width: 220px;
+			height: 200px;
+		}
+
+		.book-info {
+			padding: 30px 10px 0px 10px;
+		}
 	}
 </style>

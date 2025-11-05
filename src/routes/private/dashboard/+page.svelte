@@ -57,12 +57,14 @@
 		justify-content: space-between;
 		align-items: flex-start;
 		width: 100%;
+		gap: 24px;
 	}
 
 	.add-book {
 		display: flex;
 		align-items: center;
 		text-decoration: none;
+		flex-shrink: 0;
 	}
 
 	.add-book p {
@@ -82,11 +84,61 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		text-align: center;
+		padding: 20px;
 	}
 
 	.upload-hint div {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	/* Tablet */
+	@media (max-width: 1024px) {
+		.headline {
+			max-width: 40%;
+			min-width: 250px;
+		}
+
+		.add-book :global(svg) {
+			width: 56px !important;
+			height: 56px !important;
+		}
+	}
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.dashboard-header {
+			flex-direction: column;
+			gap: 16px;
+		}
+
+		.headline {
+			text-align: left;
+			max-width: 100%;
+			min-width: auto;
+		}
+
+		.add-book :global(svg) {
+			width: 48px !important;
+			height: 48px !important;
+		}
+
+		.upload-hint :global(svg) {
+			width: 56px !important;
+			height: 56px !important;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.add-book :global(svg) {
+			width: 40px !important;
+			height: 40px !important;
+		}
+
+		.add-book p {
+			font-size: 16px;
+		}
 	}
 </style>

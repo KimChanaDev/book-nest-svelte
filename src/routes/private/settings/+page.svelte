@@ -71,12 +71,14 @@
 	.settings-page {
 		display: flex;
 		justify-content: flex-start;
-		align-items: center;
+		align-items: flex-start;
 		width: 100%;
+		gap: 40px;
 	}
 
 	.settings-container {
-		margin-right: 80px;
+		flex: 1;
+		max-width: 600px;
 	}
 
 	.settings-container input {
@@ -89,5 +91,37 @@
 		padding: 8px 24px;
 		background-color: rgba(255, 255, 255, 0.5);
 		margin-bottom: 40px;
+	}
+
+	/* Tablet */
+	@media (max-width: 1024px) {
+		.settings-page {
+			gap: 32px;
+		}
+
+		.settings-container {
+			max-width: 500px;
+		}
+
+		.stats-container {
+			min-width: 200px;
+		}
+	}
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.settings-page {
+			flex-direction: column;
+			gap: 24px;
+		}
+
+		.settings-container {
+			max-width: 100%;
+		}
+
+		.stats-container {
+			width: 100%;
+			min-width: auto;
+		}
 	}
 </style>

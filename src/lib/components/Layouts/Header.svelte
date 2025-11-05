@@ -20,7 +20,7 @@
 	<nav>
 		{#if user}
 			<ul>
-				<li>
+				<li class="username">
 					{username}
 				</li>
 				<li>
@@ -29,7 +29,7 @@
 			</ul>
 		{:else}
 			<ul>
-				<li>
+				<li class="hide-mobile">
 					<Button isMenu={true} href="/register">Create account</Button>
 				</li>
 				<li>
@@ -46,13 +46,62 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 12px 4vw;
+		flex-wrap: wrap;
+		gap: 12px;
 	}
 	ul {
 		display: flex;
 		column-gap: 24px;
 		align-items: center;
+		flex-wrap: wrap;
 	}
 	.logo {
 		height: 72px;
+	}
+
+	.username {
+		max-width: 150px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	/* Tablet */
+	@media (max-width: 768px) {
+		.logo {
+			height: 56px;
+		}
+
+		ul {
+			column-gap: 16px;
+		}
+
+		.username {
+			max-width: 100px;
+			font-size: 14px;
+		}
+	}
+
+	/* Mobile */
+	@media (max-width: 480px) {
+		header {
+			padding: 8px 4vw;
+		}
+
+		.logo {
+			height: 48px;
+		}
+
+		ul {
+			column-gap: 8px;
+		}
+
+		.hide-mobile {
+			display: none;
+		}
+
+		.username {
+			display: none;
+		}
 	}
 </style>

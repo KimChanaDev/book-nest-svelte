@@ -60,6 +60,7 @@
 	}
 	.form-and-social-login {
 		display: flex;
+		gap: 40px;
 	}
 	.auth-form {
 		display: flex;
@@ -68,6 +69,7 @@
 		border-right: 1px solid grey;
 		padding-right: 80px;
 		width: 40%;
+		min-width: 300px;
 	}
 	.auth-hint {
 		color: grey;
@@ -95,5 +97,69 @@
 	.social-login {
 		padding-left: 80px;
 		width: 40%;
+		min-width: 250px;
+	}
+
+	/* Tablet */
+	@media (max-width: 1024px) {
+		.auth-container {
+			margin-top: 60px;
+		}
+
+		.form-and-social-login {
+			gap: 32px;
+		}
+
+		.auth-form {
+			padding-right: 40px;
+			width: 50%;
+			min-width: 280px;
+		}
+
+		.social-login {
+			padding-left: 40px;
+			width: 50%;
+		}
+	}
+
+	/* Mobile */
+	@media (max-width: 768px) {
+		.auth-container {
+			margin-top: 40px;
+		}
+
+		.form-and-social-login {
+			flex-direction: column;
+			gap: 32px;
+		}
+
+		.auth-form {
+			width: 100%;
+			border-right: none;
+			border-bottom: 1px solid grey;
+			padding-right: 0;
+			padding-bottom: 32px;
+			min-width: auto;
+		}
+
+		.social-login {
+			width: 100%;
+			padding-left: 0;
+			min-width: auto;
+		}
+
+		.auth-error {
+			font-size: 16px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.auth-container {
+			margin-top: 24px;
+		}
+
+		.auth-form input:last-of-type {
+			margin-bottom: 20px;
+		}
 	}
 </style>
